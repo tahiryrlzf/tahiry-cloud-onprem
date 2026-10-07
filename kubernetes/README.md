@@ -116,9 +116,6 @@ Le rôle Ansible `portfolio` déploie `v0.2.0` sur `vps2` (mise à jour
 appliquée pendant la migration).
 
 ```
-
-
-
 ---
 
 > **État final** : le socle Kubernetes complet (ResourceQuota, LimitRange, RBAC,
