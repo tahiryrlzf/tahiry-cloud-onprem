@@ -109,14 +109,16 @@ privée n'a été ajouté :
 grep -rniE "dockerconfigjson|ghp_|BEGIN.*PRIVATE" .
 
 ```
-## Version d'image
+Version d'image
 
-Les manifests épinglent `v0.1.0`, version déployée sur `one-prime`.
-Le rôle Ansible `portfolio` déploie `v0.2.0` sur `vps2` (mise à jour
-appliquée pendant la migration).
+Les manifests épinglent `v0.1.0`, version déployée sur `one-prime`. Le rôle Ansible
+`portfolio` déploie `v0.2.0` sur `vps2` (mise à jour appliquée pendant la migration).
 
-```
 ---
+
+> **État final** : le socle Kubernetes complet (ResourceQuota, LimitRange, RBAC,
+> NetworkPolicies, PSA) est appliqué sur vps2 par le rôle `ansible/roles/kubernetes/`.
+> Il est aligné sur celui construit et validé sur one-prime.
 
 > **État final** : le socle Kubernetes complet (ResourceQuota, LimitRange, RBAC,
 > NetworkPolicies, PSA) est appliqué sur vps2 par le rôle `ansible/roles/kubernetes/`.
