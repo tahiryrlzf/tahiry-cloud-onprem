@@ -119,7 +119,3 @@ Les manifests épinglent `v0.1.0`, version déployée sur `one-prime`. Le rôle 
 > **État final** : le socle Kubernetes complet (ResourceQuota, LimitRange, RBAC,
 > NetworkPolicies, PSA) est appliqué sur vps2 par le rôle `ansible/roles/kubernetes/`.
 > Il est aligné sur celui construit et validé sur one-prime.
-
-> **État final** : le socle Kubernetes complet (ResourceQuota, LimitRange, RBAC,
-> NetworkPolicies, PSA) est appliqué sur vps2 par le rôle `ansible/roles/kubernetes/`.
-> Il est aligné sur celui construit et validé sur one-prime.
