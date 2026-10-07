@@ -1,0 +1,6 @@
+---
+- name: Installer k3s sur vps2
+  hosts: vps2
+  become: true
+  roles:
+    - k3s

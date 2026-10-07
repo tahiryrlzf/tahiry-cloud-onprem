@@ -1,0 +1,8 @@
+---
+# Exemple du fichier de variables utilisé pour vps2.
+# Les vraies valeurs sont chiffrées avec Ansible Vault
+# et le fichier réel n'est pas versionné dans le dépôt.
+
+ansible_password: "<VALEUR_VAULT>"
+ansible_become_password: "<VALEUR_VAULT>"
+vault_ghcr_token: "<VALEUR_VAULT>"

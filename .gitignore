@@ -1,0 +1,31 @@
+# Documentation privée
+docs/
+notes/
+private/
+
+# Secrets
+*.key
+*.pem
+*-secret.yaml
+kubeconfig*
+config.xml
+.env
+
+# Vault
+.vault_pass
+ansible/group_vars/*.yml
+
+# Exports et sauvegardes
+k8s-export/
+k8s-export.tar.gz
+*.bak
+*.bak-*
+
+# Divers
+.ansible/
+.DS_Store
+*.swp
+*.log
+*.retry
+.vscode/
+.idea/

@@ -1,0 +1,7 @@
+---
+- name: Déployer l'environnement portfolio sur vps2
+  hosts: vps2
+  become: true
+  roles:
+    - kubernetes    # socle : Namespace + PSA + ResourceQuota + LimitRange + RBAC + NetworkPolicies
+    - portfolio     # workload : Secret GHCR + Deployment + Service + Ingress

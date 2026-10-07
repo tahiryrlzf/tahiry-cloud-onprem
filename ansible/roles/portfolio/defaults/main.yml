@@ -1,0 +1,9 @@
+---
+portfolio_image: "ghcr.io/tahiryrlzf/tahiry-cloud-portfolio:v0.2.0"
+portfolio_namespaces:
+  - name: prod
+    host: tahiry-cloud.com
+  - name: staging
+    host: staging.tahiry-cloud.com
+ghcr_username: "tahiryrlzf"
+ghcr_token: "{{ vault_ghcr_token }}"

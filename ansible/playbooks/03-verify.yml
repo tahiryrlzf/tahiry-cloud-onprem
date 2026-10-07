@@ -1,0 +1,40 @@
+---
+- name: Vérifier la migration
+  hosts: vps2
+  become: true
+  tasks:
+    - name: Nodes
+      shell: k3s kubectl get nodes -o wide
+      changed_when: false
+      register: nodes
+
+    - name: Pods
+      shell: k3s kubectl get pods -A -o wide
+      changed_when: false
+      register: pods
+
+    - name: Ingress
+      shell: k3s kubectl get ingress -A
+      changed_when: false
+      register: ingress
+
+    - name: Test HTTP prod
+      shell: |
+        curl -s -o /dev/null -w "%{http_code}" -H "Host: tahiry-cloud.com" http://127.0.0.1/
+      changed_when: false
+      register: http_prod
+
+    - name: Test HTTP staging
+      shell: |
+        curl -s -o /dev/null -w "%{http_code}" -H "Host: staging.tahiry-cloud.com" http://127.0.0.1/
+      changed_when: false
+      register: http_staging
+
+    - name: Résumé
+      debug:
+        msg:
+          - "{{ nodes.stdout }}"
+          - "{{ pods.stdout }}"
+          - "{{ ingress.stdout }}"
+          - "HTTP prod    : {{ http_prod.stdout }}"
+          - "HTTP staging : {{ http_staging.stdout }}"

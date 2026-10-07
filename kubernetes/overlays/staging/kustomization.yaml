@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: staging
+
+resources:
+  - ../../base
+  - ingress.yaml
+
+images:
+  - name: ghcr.io/tahiryrlzf/tahiry-cloud-portfolio
+    newTag: v0.1.0
+
+replicas:
+  - name: portfolio
+    count: 1

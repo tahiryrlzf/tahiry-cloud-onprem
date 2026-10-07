@@ -1,0 +1,36 @@
+---
+- name: Créer répertoire de travail
+  file:
+    path: /tmp/k8s-portfolio
+    state: directory
+    mode: '0755'
+
+- name: Générer manifest par namespace
+  template:
+    src: all.yml.j2
+    dest: "/tmp/k8s-portfolio/{{ item.name }}.yml"
+  loop: "{{ portfolio_namespaces }}"
+  vars:
+    ns_name: "{{ item.name }}"
+    ns_host: "{{ item.host }}"
+
+- name: Appliquer manifests
+  shell: k3s kubectl apply -f /tmp/k8s-portfolio/{{ item.name }}.yml
+  loop: "{{ portfolio_namespaces }}"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Attendre Deployment ready
+  shell: k3s kubectl wait --for=condition=Available deployment/portfolio -n {{ item.name }} --timeout=180s
+  loop: "{{ portfolio_namespaces }}"
+  changed_when: false
+
+- name: État final
+  shell: k3s kubectl get all,ingress -n {{ item.name }}
+  loop: "{{ portfolio_namespaces }}"
+  register: final_state
+  changed_when: false
+
+- name: Résumé
+  debug:
+    msg: "{{ final_state.results | map(attribute='stdout') | list }}"

@@ -1,0 +1,54 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installer yamllint
+        run: pip install yamllint
+      - name: yamllint
+        run: yamllint .
+
+  ansible-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Installer ansible et ansible-lint
+        run: pip install ansible ansible-lint
+      - name: Fichier vault factice (jamais utilisé, évite une erreur de config)
+        run: |
+          printf 'ci-dummy\n' > ~/.vault_pass
+          chmod 600 ~/.vault_pass
+      - name: ansible-lint
+        run: ansible-lint
+        working-directory: ansible
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
