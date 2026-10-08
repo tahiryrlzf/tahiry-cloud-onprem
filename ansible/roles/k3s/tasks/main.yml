@@ -41,7 +41,7 @@
   shell: |
     curl -sfL https://get.k3s.io | \
       INSTALL_K3S_VERSION="{{ k3s_version }}" \
-      sh -s - server --write-kubeconfig-mode 644
+      sh -s - server --write-kubeconfig-mode 600
   args:
     creates: /usr/local/bin/k3s
   when: not k3s_bin.stat.exists
