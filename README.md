@@ -122,7 +122,7 @@ Détails : `ansible/README.md`.
 | Secrets chiffrés avec Ansible Vault ; fichier réel gitignoré | `ansible/group_vars/` |
 | Token GHCR masqué dans les logs (`no_log`), manifests temporaires en `0600`, supprimés même en cas d'échec | `ansible/roles/portfolio/tasks/main.yml` |
 | Kubeconfig récupéré localement (mode `644` côté serveur) | `ansible/roles/k3s/tasks/main.yml` |
-| SSH : clé ed25519 dédiée ; `host_key_checking = False` dans la configuration Ansible (adapté au lab) | `ansible/ansible.cfg` |
+| SSH : clé ed25519 dédiée ; `host_key_checking = Tue` dans la configuration Ansible (adapté au lab) | `ansible/ansible.cfg` |
 | Version de k3s épinglée | `ansible/roles/k3s/defaults/main.yml` |
 | Aucun Secret versionné ; export du cluster sans les Secrets | `scripts/export-k8s.sh` |
 
