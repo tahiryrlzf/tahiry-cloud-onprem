@@ -144,7 +144,6 @@ Détails : `ansible/README.md`.
 ## Statut
 
 ⚠️ Lab décommissionné : `vm-containers` est éteint. Dépôt conservé comme référence.
-La version active de l'infrastructure est dans `tahiry-cloud-platform`.
 
 ## Licence
 
