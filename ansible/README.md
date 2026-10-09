@@ -7,7 +7,7 @@ Automatisation du déploiement de l'environnement Kubernetes sur `vps2`.
 ```text
 ansible/
 ├── ansible.cfg
-├── inventory.ini
+├── inventory.ini.example
 ├── group_vars/
 │   └── vps2.yml.example
 ├── playbooks/
