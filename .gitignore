@@ -29,3 +29,8 @@ k8s-export.tar.gz
 *.retry
 .vscode/
 .idea/
+
+inventory.ini
+ansible/group_vars/vps2.yml
+*.retry
+.vault_pass
