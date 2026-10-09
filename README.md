@@ -137,7 +137,7 @@ Détails : `ansible/README.md`.
 - **Installation de k3s via le script officiel** : version épinglée, mais script non vérifié par checksum.
 
 
-- ## Accès au cluster
+## Accès au cluster
 
 L'API Kubernetes (6443) de `vps2` n'est pas exposée publiquement : elleest accessible uniquement via le tunnel WireGuard, le pare-feu de l'hôtefiltrant le port en amont.
 
