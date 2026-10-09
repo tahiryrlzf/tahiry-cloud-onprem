@@ -131,16 +131,15 @@ Détails : `ansible/README.md`.
 | Version de k3s épinglée | `ansible/roles/k3s/defaults/main.yml` |
 | Aucun Secret versionné ; export du cluster sans les Secrets | `scripts/export-k8s.sh` |
 
+## Accès au cluster
+
+L'API Kubernetes (6443) de `vps2` n'est pas exposée publiquement : elle est accessible uniquement via le tunnel WireGuard, le pare-feu de l'hôte filtrant le port en amont.
+
 ## Limites connues
 
 - **Règles pfSense inter-VLAN permissives** (lab). Le durcissement prévu est détaillé dans `network/pfsense.md`.
 - **Installation de k3s via le script officiel** : version épinglée, mais script non vérifié par checksum.
-
-
-## Accès au cluster
-
-L'API Kubernetes (6443) de `vps2` n'est pas exposée publiquement : elleest accessible uniquement via le tunnel WireGuard, le pare-feu de l'hôtefiltrant le port en amont.
-
+  
 ## Retours d'expérience
 
 - **802.1Q avec VMware Workstation :** tous les VLANs circulent sur le même câble virtuel, sans filtrage par port. Chaque VM doit tagger elle-même son trafic, sinon pfSense l'ignore.
