@@ -144,7 +144,6 @@ L'API Kubernetes (6443) de `vps2` n'est pas exposée publiquement : elle est acc
 
 - **802.1Q avec VMware Workstation :** tous les VLANs circulent sur le même câble virtuel, sans filtrage par port. Chaque VM doit tagger elle-même son trafic, sinon pfSense l'ignore.
 - **Firewall du prestataire + WireGuard :** le firewall réseau fourni par l'hébergeur du VPS, placé devant le serveur, peut casser un tunnel WireGuard alors que les règles semblent correctes. Un firewall par serveur, géré sur l'hôte.
-- **Firewall du prestataire ≠ iptables :** le suivi d'état des connexions ne se comporte pas pareil des deux côtés. Deux heures de debug pour le comprendre.
 - **k3s single-node :** léger, avec `local-path-provisioner` qui suffit pour une application stateless.
 - **Ansible :** `.vault_pass` en `chmod 600` et jamais commité. Les rôles permettent de rejouer sur un autre serveur sans rien réécrire. `kubectl wait` remplace les `sleep`.
 - **Secrets :** un `.gitignore` ne suffit pas, il faut un scanner (gitleaks) qui le vérifie.
