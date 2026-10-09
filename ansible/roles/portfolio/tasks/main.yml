@@ -1,36 +1,91 @@
 ---
-- name: Créer répertoire de travail
-  file:
+- name: Créer répertoire de travail privé
+  ansible.builtin.file:
     path: /tmp/k8s-portfolio
     state: directory
-    mode: '0755'
+    owner: root
+    group: root
+    mode: "0700"
 
-- name: Générer manifest par namespace
-  template:
-    src: all.yml.j2
-    dest: "/tmp/k8s-portfolio/{{ item.name }}.yml"
-  loop: "{{ portfolio_namespaces }}"
-  vars:
-    ns_name: "{{ item.name }}"
-    ns_host: "{{ item.host }}"
+- name: Déployer le portfolio dans chaque namespace
+  block:
+    - name: Générer les manifests (contiennent le token GHCR)
+      ansible.builtin.template:
+        src: all.yml.j2
+        dest: "/tmp/k8s-portfolio/{{ item.name }}.yml"
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ portfolio_namespaces }}"
+      loop_control:
+        label: "{{ item.name }}"
+      vars:
+        ns_name: "{{ item.name }}"
+        ns_host: "{{ item.host }}"
+      no_log: true
 
-- name: Appliquer manifests
-  shell: k3s kubectl apply -f /tmp/k8s-portfolio/{{ item.name }}.yml
-  loop: "{{ portfolio_namespaces }}"
-  register: apply_result
-  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+    - name: Appliquer les manifests
+      ansible.builtin.command:
+        argv:
+          - k3s
+          - kubectl
+          - apply
+          - -f
+          - "/tmp/k8s-portfolio/{{ item.name }}.yml"
+      loop: "{{ portfolio_namespaces }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: apply_result
+      changed_when: >
+        'created' in apply_result.stdout or
+        'configured' in apply_result.stdout
+      no_log: true
 
-- name: Attendre Deployment ready
-  shell: k3s kubectl wait --for=condition=Available deployment/portfolio -n {{ item.name }} --timeout=180s
-  loop: "{{ portfolio_namespaces }}"
-  changed_when: false
+    - name: Attendre que le Deployment soit disponible
+      ansible.builtin.command:
+        argv:
+          - k3s
+          - kubectl
+          - wait
+          - --for=condition=Available
+          - deployment/portfolio
+          - "-n"
+          - "{{ item.name }}"
+          - --timeout=180s
+      loop: "{{ portfolio_namespaces }}"
+      loop_control:
+        label: "{{ item.name }}"
+      changed_when: false
 
-- name: État final
-  shell: k3s kubectl get all,ingress -n {{ item.name }}
-  loop: "{{ portfolio_namespaces }}"
-  register: final_state
-  changed_when: false
+    - name: État final du workload
+      ansible.builtin.command:
+        argv:
+          - k3s
+          - kubectl
+          - get
+          - all,ingress
+          - "-n"
+          - "{{ item.name }}"
+      loop: "{{ portfolio_namespaces }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: final_state
+      changed_when: false
 
-- name: Résumé
-  debug:
-    msg: "{{ final_state.results | map(attribute='stdout') | list }}"
+    - name: Résumé
+      ansible.builtin.debug:
+        msg: "{{ final_state.results | map(attribute='stdout') | list }}"
+
+  always:
+    - name: Supprimer les manifests générés (contiennent le token)
+      ansible.builtin.file:
+        path: "/tmp/k8s-portfolio/{{ item.name }}.yml"
+        state: absent
+      loop: "{{ portfolio_namespaces }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Supprimer le répertoire temporaire
+      ansible.builtin.file:
+        path: /tmp/k8s-portfolio
+        state: absent
