@@ -105,6 +105,11 @@ Trois rôles Ansible complémentaires, relançables à volonté :
 - **`portfolio`** — workload applicatif : Secret GHCR, Deployment, Service,
   Ingress.
 
+La migration initiale de vps2 n'avait déployé que le workload (rôle `portfolio`). Le socle
+complet a ensuite été appliqué avec le rôle `kubernetes` pour aligner vps2 sur la
+configuration de one-prime : ResourceQuota, LimitRange, RBAC, NetworkPolicies et Pod Security
+Admission.
+
 Le playbook `02-deploy-portfolio.yml` applique `kubernetes` puis `portfolio`.
 Aucune ressource n'est déployée deux fois. Secrets chiffrés par Ansible Vault.
 Détails : `ansible/README.md`.
@@ -120,6 +125,7 @@ Détails : `ansible/README.md`.
 | Pod : token ServiceAccount non monté, limites CPU/mémoire | `kubernetes/base/deployment.yaml` |
 | Conteneur non-root, `readOnlyRootFilesystem`, `capabilities: drop [ALL]`, `allowPrivilegeEscalation: false`, `seccompProfile: RuntimeDefault` (déploiement Ansible sur vps2) | `ansible/roles/portfolio/templates/all.yml.j2` |
 | Secrets chiffrés avec Ansible Vault ; fichier réel gitignoré | `ansible/group_vars/` |
+| Token GHCR masqué dans les logs (`no_log`), manifests temporaires en `0600`, supprimés même en cas d'échec | `ansible/roles/portfolio/tasks/main.yml` |
 | Kubeconfig récupéré localement (mode `600` côté serveur) | `ansible/roles/k3s/tasks/main.yml` |
 | SSH : clé ed25519 dédiée ; `host_key_checking = True` dans la configuration Ansible (adapté au lab) | `ansible/ansible.cfg` |
 | Version de k3s épinglée | `ansible/roles/k3s/defaults/main.yml` |
@@ -147,9 +153,3 @@ Détails : `ansible/README.md`.
 ## Licence
 
 MIT
-
-
-> **Note** : la migration initiale de vps2 avait déployé uniquement le workload
-> (rôle `portfolio`). Le socle Kubernetes complet a ensuite été appliqué via le
-> rôle `kubernetes` pour aligner vps2 sur la configuration de one-prime :
-> ResourceQuota, LimitRange, RBAC, NetworkPolicies et Pod Security Admission.

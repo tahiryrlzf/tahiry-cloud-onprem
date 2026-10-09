@@ -3,7 +3,7 @@
   ansible.builtin.file:
     path: /tmp/tahiry-cloud-kubernetes
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: Copier les manifests du socle namespaces
   ansible.builtin.copy:
@@ -14,35 +14,35 @@
 - name: Appliquer le socle prod (Namespace, ResourceQuota, LimitRange, RBAC, NetworkPolicies, PSA)
   ansible.builtin.command:
     cmd: k3s kubectl apply -k /tmp/tahiry-cloud-kubernetes/namespaces/overlays/prod
-  register: prod_socle_result
+  register: kubernetes_prod_socle_result
   changed_when: >
-    'created' in prod_socle_result.stdout or
-    'configured' in prod_socle_result.stdout
+    'created' in kubernetes_prod_socle_result.stdout or
+    'configured' in kubernetes_prod_socle_result.stdout
 
 - name: Appliquer le socle staging (Namespace, ResourceQuota, LimitRange, RBAC, NetworkPolicies, PSA)
   ansible.builtin.command:
     cmd: k3s kubectl apply -k /tmp/tahiry-cloud-kubernetes/namespaces/overlays/staging
-  register: staging_socle_result
+  register: kubernetes_staging_socle_result
   changed_when: >
-    'created' in staging_socle_result.stdout or
-    'configured' in staging_socle_result.stdout
+    'created' in kubernetes_staging_socle_result.stdout or
+    'configured' in kubernetes_staging_socle_result.stdout
 
 - name: Vérifier le socle prod
   ansible.builtin.command:
     cmd: k3s kubectl get ns,resourcequota,limitrange,networkpolicy,serviceaccount,role,rolebinding -n prod
-  register: prod_socle_state
+  register: kubernetes_prod_socle_state
   changed_when: false
 
 - name: Vérifier le socle staging
   ansible.builtin.command:
     cmd: k3s kubectl get ns,resourcequota,limitrange,networkpolicy,serviceaccount,role,rolebinding -n staging
-  register: staging_socle_state
+  register: kubernetes_staging_socle_state
   changed_when: false
 
 - name: Résumé socle prod
   ansible.builtin.debug:
-    var: prod_socle_state.stdout_lines
+    var: kubernetes_prod_socle_state.stdout_lines
 
 - name: Résumé socle staging
   ansible.builtin.debug:
-    var: staging_socle_state.stdout_lines
+    var: kubernetes_staging_socle_state.stdout_lines

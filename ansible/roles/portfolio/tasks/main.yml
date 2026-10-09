@@ -35,11 +35,10 @@
       loop: "{{ portfolio_namespaces }}"
       loop_control:
         label: "{{ item.name }}"
-      register: apply_result
+      register: portfolio_apply_result
       changed_when: >
-        'created' in apply_result.stdout or
-        'configured' in apply_result.stdout
-      no_log: true
+        'created' in portfolio_apply_result.stdout or
+        'configured' in portfolio_apply_result.stdout
 
     - name: Attendre que le Deployment soit disponible
       ansible.builtin.command:
@@ -69,12 +68,12 @@
       loop: "{{ portfolio_namespaces }}"
       loop_control:
         label: "{{ item.name }}"
-      register: final_state
+      register: portfolio_final_state
       changed_when: false
 
     - name: Résumé
       ansible.builtin.debug:
-        msg: "{{ final_state.results | map(attribute='stdout') | list }}"
+        msg: "{{ portfolio_final_state.results | map(attribute='stdout') | list }}"
 
   always:
     - name: Supprimer les manifests générés (contiennent le token)

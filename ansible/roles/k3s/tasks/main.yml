@@ -1,16 +1,16 @@
 ---
 - name: Désactiver le swap (requis par k3s)
-  command: swapoff -a
+  ansible.builtin.command: swapoff -a
   changed_when: false
 
 - name: Commenter le swap dans /etc/fstab
-  replace:
+  ansible.builtin.replace:
     path: /etc/fstab
     regexp: '^([^#].*\sswap\s.*)$'
     replace: '# \1'
 
 - name: Charger modules kernel
-  modprobe:
+  community.general.modprobe:
     name: "{{ item }}"
     state: present
   loop:
@@ -18,36 +18,41 @@
     - overlay
 
 - name: Sysctl Kubernetes
-  copy:
+  ansible.builtin.copy:
     dest: /etc/sysctl.d/99-kubernetes.conf
+    owner: root
+    group: root
+    mode: "0644"
     content: |
       net.bridge.bridge-nf-call-iptables  = 1
       net.bridge.bridge-nf-call-ip6tables = 1
       net.ipv4.ip_forward                 = 1
-  notify: reload sysctl
+  notify: Reload sysctl
 
 - name: Installer paquets requis
-  apt:
+  ansible.builtin.apt:
     name: [curl, ca-certificates]
     state: present
     update_cache: true
 
 - name: Vérifier si k3s est installé
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/k3s
   register: k3s_bin
 
 - name: Installer k3s single-node
-  shell: |
-    curl -sfL https://get.k3s.io | \
-      INSTALL_K3S_VERSION="{{ k3s_version }}" \
-      sh -s - server --write-kubeconfig-mode 600
-  args:
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      curl -sfL https://get.k3s.io | \
+        INSTALL_K3S_VERSION="{{ k3s_version }}" \
+        sh -s - server --write-kubeconfig-mode 600
+    executable: /bin/bash
     creates: /usr/local/bin/k3s
   when: not k3s_bin.stat.exists
 
 - name: Attendre que k3s soit prêt
-  command: k3s kubectl get nodes
+  ansible.builtin.command: k3s kubectl get nodes
   register: k3s_ready
   until: k3s_ready.rc == 0 and ' Ready ' in k3s_ready.stdout
   retries: 30
@@ -57,21 +62,21 @@
 - name: Créer ~/.kube local
   delegate_to: localhost
   become: false
-  file:
-    path: /home/sysadmin/.kube
+  ansible.builtin.file:
+    path: "{{ k3s_local_kube_dir }}"
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: Récupérer le kubeconfig
-  fetch:
+  ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: /home/sysadmin/.kube/vps2-config
+    dest: "{{ k3s_local_kubeconfig }}"
     flat: true
 
 - name: Corriger l'IP dans le kubeconfig local
   delegate_to: localhost
   become: false
-  replace:
-    path: /home/sysadmin/.kube/vps2-config
+  ansible.builtin.replace:
+    path: "{{ k3s_local_kubeconfig }}"
     regexp: 'https://127.0.0.1:6443'
-    replace: 'https://10.10.0.2:6443'
+    replace: "https://{{ k3s_api_address }}:6443"

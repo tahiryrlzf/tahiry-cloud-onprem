@@ -107,9 +107,9 @@ privée n'a été ajouté :
 
 ```bash
 grep -rniE "dockerconfigjson|ghp_|BEGIN.*PRIVATE" .
-
 ```
-Version d'image
+
+## Version d'image
 
 Les manifests épinglent `v0.1.0`, version déployée sur `one-prime`. Le rôle Ansible
 `portfolio` déploie `v0.2.0` sur `vps2` (mise à jour appliquée pendant la migration).
