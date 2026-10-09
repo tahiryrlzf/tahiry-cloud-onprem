@@ -135,7 +135,11 @@ Détails : `ansible/README.md`.
 
 - **Règles pfSense inter-VLAN permissives** (lab). Le durcissement prévu est détaillé dans `network/pfsense.md`.
 - **Installation de k3s via le script officiel** : version épinglée, mais script non vérifié par checksum.
-- **API Kubernetes (6443)** : à restreindre au tunnel WireGuard par le pare-feu de l'hôte (voir `ansible/README.md`).
+
+
+- ## Accès au cluster
+
+L'API Kubernetes (6443) de `vps2` n'est pas exposée publiquement : elleest accessible uniquement via le tunnel WireGuard, le pare-feu de l'hôtefiltrant le port en amont.
 
 ## Retours d'expérience
 
